@@ -15,8 +15,6 @@ export default function Home() {
 }
 
 
-
-
 const HomePage = () => {
   return (
     <div className='w-full dotted-background relative flex items-center justify-center'>
@@ -45,7 +43,7 @@ const HomePage = () => {
                   Getting Started
                 </button>
               </a>
-              <a href='/idea'>
+              <a href='/docs'>
                 <button className='whitespace-nowrap flex flex-row items-center justify-center gap-2 rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2'>
                   Learn More
                   <svg xmlns='http://www.w3.org/2000/svg' className='lucide lucide-arrow-right ml-1 h-4 w-4 transition-transform duration-300 ease-in-out transform hover:translate-x-1' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
