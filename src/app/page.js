@@ -36,7 +36,7 @@ const HomePage = () => {
             building images effortlessly.
             </h1>
             <span className='max-w-[750px] text-center text-lg font-light text-foreground' style={{ display: 'inline-block', verticalAlign: 'top', textDecoration: 'inherit', textWrap: 'balance' }}>
-              A Internal Developer platform for creating kubernetes native container images without installing any containerization tools and any docker/ k8s knowledge
+              A Internal Developer platform for creating kubernetes native container images without installing any containerization tools and without writing dockerfiles.
             </span>
 
             <div className='flex w-full items-center justify-center space-x-4 py-4 md:pb-10'>
