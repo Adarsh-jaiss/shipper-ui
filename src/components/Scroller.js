@@ -20,7 +20,7 @@ const Scroller = () => {
         transformStyle: "preserve-3d",
         scale: 1,
       }}
-      className=" w-full h-full"
+      className=" w-full h-full flex justify-center items-center p-5"
     >
       <motion.div
         style={{
@@ -29,7 +29,7 @@ const Scroller = () => {
           transformStyle: "preserve-3d",
           scale: 1,
         }}
-        className="relative  p-5 border-2 border-black rounded-lg overflow-hidden w-full h-[100vh]"
+        className="relative  p-5 border-2 border-black rounded-lg overflow-hidden w-[80%] h-[80vh]"
       >
         <iframe
           width="100%"
