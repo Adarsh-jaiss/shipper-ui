@@ -1,277 +1,209 @@
-"use client"
-import React from 'react'
-import { useState } from 'react'
+"use client";
+import React, { useState } from "react";
+import { AlertCircle, ArrowRight, ArrowLeft, Ship, Check } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+const steps = [
+  {
+    title: "Registry Details",
+    fields: [
+      "registryServer",
+      "registryUser",
+      "registryEmail",
+      "registryPassword",
+    ],
+  },
+  {
+    title: "Build Configuration",
+    fields: ["buildName", "sourceType", "buildRunDeletion", "githubUrl"],
+  },
+  {
+    title: "Image Details",
+    fields: ["buildStrategy", "imageName", "timeOut"],
+  },
+];
 
 export default function BuildImg() {
-    return (
-        <Build />
-    )
-}
+  const [currentStep, setCurrentStep] = useState(0);
+  const [formData, setFormData] = useState({
+    registryServer: "",
+    registryUser: "",
+    registryEmail: "",
+    registryPassword: "",
+    buildName: "",
+    sourceType: "",
+    buildRunDeletion: "",
+    githubUrl: "",
+    buildStrategy: "",
+    imageName: "",
+    timeOut: "",
+  });
+  const [error, setError] = useState("");
 
-function Build() {
-    const [registryServer, setRegistryServer] = useState("");
-    const [registryUser, setRegistryUser] = useState("");
-    const [registryEmail, setRegistryEmail] = useState("");
-    const [registryPassword, setRegistryPassword] = useState("");
-    const [buildName, setBuildName] = useState("");
-    const [sourceType, setSourceType] = useState("");
-    const [buildRunDeletion, setBuildRunDeletion] = useState("");
-    const [githubUrl, setGithubUrl] = useState("");
-    const [buildStrategy, setBuildStrategy] = useState("");
-    const [imageName, setImageName] = useState("");
-    const [timeOut, setTimeOut] = useState("");
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        console.log(
-            registryServer,
-            registryUser,
-            registryEmail,
-            registryPassword,
-            buildName,
-            sourceType,
-            buildRunDeletion,
-            githubUrl,
-            buildStrategy,
-            imageName,
-            timeOut
-        );
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
 
-        // API Logic here
-        const userData = {
-            registryServer,
-            registryUser,
-            registryEmail,
-            registryPassword,
-            buildName,
-            sourceType,
-            buildRunDeletion,
-            githubUrl,
-            buildStrategy,
-            imageName,
-            timeOut
-        };
+    try {
+      const res = await fetch("http://localhost:8080/build", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-        try {
-            console.log("Sending user data:", JSON.stringify(userData))
-            const res = await fetch("http://localhost:8080/build", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(userData),
-            });
+      if (res.ok) {
+        alert("Container image build process initiated successfully");
+      } else {
+        const data = await res.json();
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      setError(
+        error.message || "An error occurred while processing your request"
+      );
+    }
+  };
 
-            if (res.ok) {
-                alert("Account created successfully");
-            } else {
-                const data = await res.json();
-                throw new Error(data.message);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
+  const nextStep = () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
 
-    return (
-        <div className=" min-h-screen flex items-center justify-center ">
-            <div className=" rounded-2xl border border-slate-300 shadow-2xl pt-10 pb-10 pl-20 pr-20 ">
-                <h2 className="text-center text-2xl font-bold mb-">Shipper</h2>
-                <p className="text-center text-gray-600 mb-6">Build your own container image</p>
+  const prevStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
 
-                <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
-                    <div className="mb-4">
-                        <label htmlFor="RegistryServer" className=" block text-gray-700 font-bold mb-2">
-                            Registry Server
-                        </label>
-                        <input
-                            type="text"
-                            id="RegistryServer"
-                            name="RegistryServer"
-                            value={registryServer}
-                            onChange={(e) => setRegistryServer(e.target.value)}
-                            className="shadow appearance-none border rounded-xl w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            placeholder="Registry Server"
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="RegistryUser" className="block text-gray-700 font-bold mb-2">
-                            Registry User
-                        </label>
-                        <input
-                            type="text"
-                            id="RegistryUser"
-                            name="RegistryUser"
-                            value={registryUser}
-                            onChange={(e) => setRegistryUser(e.target.value)}
-                            className="shadow appearance-none border rounded-xl w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            placeholder="Registry User"
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="RegistryEmail" className="block text-gray-700 font-bold mb-2">
-                            Registry Email
-                        </label>
-                        <input
-                            type="email"
-                            id="RegistryEmail"
-                            name="RegistryEmail"
-                            value={registryEmail}
-                            onChange={(e) => setRegistryEmail(e.target.value)}
-                            className="shadow appearance-none border rounded-xl w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            placeholder="Registry Email address"
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="RegistryPassword" className="block text-gray-700 font-bold mb-2">
-                            Registry Password
-                        </label>
-                        <input
-                            type="password"
-                            id="RegistryPassword"
-                            name="RegistryPassword"
-                            value={registryPassword}
-                            onChange={(e) => setRegistryPassword(e.target.value)}
-                            className="font-medium shadow appearance-none border rounded-xl w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            placeholder="Registry Password"
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="BuildName" className="block text-gray-700 font-bold mb-2">
-                            Build Name
-                        </label>
-                        <input
-                            type="text"
-                            id="BuildName"
-                            name="BuildName"
-                            value={buildName}
-                            onChange={(e) => setBuildName(e.target.value)}
-                            className="shadow appearance-none border rounded-xl w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            placeholder="Build Name"
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="SourceType" className="block text-gray-700 font-bold mb-2">
-                            Source Type
-                        </label>
-                        <input
-                            type="text"
-                            id="SourceType"
-                            name="SourceType"
-                            value={sourceType}
-                            onChange={(e) => setSourceType(e.target.value)}
-                            className="shadow appearance-none border rounded-xl w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            placeholder="Source Type"
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="BuildRunDeletion" className="block text-gray-700 font-bold mb-2">
-                            Build Run Deletion
-                        </label>
-                        <input
-                            type="text"
-                            id="BuildRunDeletion"
-                            name="BuildRunDeletion"
-                            value={buildRunDeletion}
-                            onChange={(e) => setBuildRunDeletion(e.target.value)}
-                            className="shadow appearance-none border rounded-xl w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            placeholder="Build Run Deletion"
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="GithubUrl" className="block text-gray-700 font-bold mb-2">
-                            Github URL
-                        </label>
-                        <input
-                            type="text"
-                            id="GithubUrl"
-                            name="GithubUrl"
-                            value={githubUrl}
-                            onChange={(e) => setGithubUrl(e.target.value)}
-                            className="shadow appearance-none border rounded-xl w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            placeholder="Github URL"
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="BuildStrategy" className="block text-gray-700 font-bold mb-2">
-                            Build Strategy
-                        </label>
-                        <input
-                            type="text"
-                            id="BuildStrategy"
-                            name="BuildStrategy"
-                            value={buildStrategy}
-                            onChange={(e) => setBuildStrategy(e.target.value)}
-                            className="shadow appearance-none border rounded-xl w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            placeholder="Build Strategy"
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="ImageName" className="block text-gray-700 font-bold mb-2">
-                            Image Name
-                        </label>
-                        <input
-                            type="text"
-                            id="ImageName"
-                            name="ImageName"
-                            value={imageName}
-                            onChange={(e) => setImageName(e.target.value)}
-                            className="shadow appearance-none border rounded-xl w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            placeholder="Image Name"
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="TimeOut" className="block text-gray-700 font-bold mb-2">
-                            Time Out
-                        </label>
-                        <input
-                            type="text"
-                            id="TimeOut"
-                            name="TimeOut"
-                            value={timeOut}
-                            onChange={(e) => setTimeOut(e.target.value)}
-                            className="shadow appearance-none border rounded-xl w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            placeholder="Time Out"
-                            required
-                        />
-                    </div>
-
-                    <div className="flex items-center justify-between mt-2 col-span-2">
-                        <button
-                            type="submit"
-                            onClick={handleSubmit}
-                            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gray-900 hover:bg-gray-950 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-950"
+  return (
+    <div className="min-h-screen  flex items-center justify-center p-4">
+      <Card className="w-full max-w-4xl shadow-2xl">
+        <CardHeader className="space-y-1 bg-neutral-900 text-white rounded-t-xl p-6">
+          <div className="flex items-center justify-center space-x-2">
+            <Ship className="h-8 w-8" />
+            <CardTitle className="text-3xl font-bold">shipper</CardTitle>
+          </div>
+          <CardDescription className="text-white/85 align-middle w-full text-center">
+            build your own container image with ease
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-6">
+          <Tabs value={steps[currentStep].title} className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              {steps.map((step, index) => (
+                <TabsTrigger
+                  key={step.title}
+                  value={step.title}
+                  disabled={index > currentStep}
+                  className={
+                    index <= currentStep
+                      ? "text-blue-500 lowercase "
+                      : "text-gray-400 lowercase"
+                  }
+                >
+                  {index + 1}. {step.title}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            {steps.map((step, index) => (
+              <TabsContent key={step.title} value={step.title}>
+                <form
+                  onSubmit={(e) => e.preventDefault()}
+                  className="space-y-4 mt-4"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {step.fields.map((key) => (
+                      <div key={key} className="space-y-2">
+                        <Label
+                          htmlFor={key}
+                          className="text-sm font-medium lowercase"
                         >
-                            Create Conatiner Image
-                        </button>
-                    </div>
+                          {key.charAt(0).toUpperCase() +
+                            key
+                              .slice(1)
+                              .replace(/([A-Z])/g, " $1")
+                              .trim()}
+                        </Label>
+                        <Input
+                          type={
+                            key.toLowerCase().includes("password")
+                              ? "password"
+                              : "text"
+                          }
+                          id={key}
+                          name={key}
+                          value={formData[key]}
+                          onChange={handleChange}
+                          className="w-full"
+                          placeholder={`Enter ${
+                            key.charAt(0).toUpperCase() +
+                            key
+                              .slice(1)
+                              .replace(/([A-Z])/g, " $1")
+                              .trim()
+                          }`}
+                          required
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </form>
+              </TabsContent>
+            ))}
+          </Tabs>
+          {error && (
+            <Alert variant="destructive" className="mt-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+        </CardContent>
 
-                {/* <p className="text-center text-gray-600 mt-4">
-                    Already have an account? <a href="./signin" className="text-blue-500 hover:text-blue-700">Sign in</a>
-                </p> */}
-            </div>
-        </div>
-    );
+        <hr />
+        <CardFooter className=" rounded-b-xl p-6 flex justify-between">
+          <Button
+            onClick={prevStep}
+            disabled={currentStep === 0}
+            variant="outline"
+            className="w-1/3 whitespace-nowrap flex flex-row items-center justify-center gap-2 rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" /> previous
+          </Button>
+          {currentStep < steps.length - 1 ? (
+            <Button
+              onClick={nextStep}
+              className="w-1/3 whitespace-nowrap flex flex-row items-center justify-center gap-2 rounded-md text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-gradient-to-b from-neutral-600 to-neutral-900 text-white shadow-md hover:brightness-105 hover:shadow-lg transition-all duration-200 ease-in-out h-10 px-4 py-2"
+            >
+              next <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          ) : (
+            <Button
+              onClick={handleSubmit}
+              className="w-1/3 bg-green-600 hover:bg-green-700 whitespace-nowrap flex flex-row items-center justify-center gap-2 rounded-md text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50  text-white shadow-md hover:brightness-105 hover:shadow-lg transition-all duration-200 ease-in-out h-10 px-4 py-2"
+            >
+              ship it! <Check className="ml-2 h-4 w-4" />
+            </Button>
+          )}
+        </CardFooter>
+      </Card>
+    </div>
+  );
 }
