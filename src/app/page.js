@@ -1,5 +1,5 @@
 "use client";
-// import Scroller from "@/components/Scroller";
+import Scroller from "@/components/Scroller";
 import "./globals.css";
 import Callendy from "@/components/Callendy";
 import Navbar from "@/components/Navbar";
@@ -87,7 +87,7 @@ const HomePage = () => {
         </section>
       </div>
       <div id="Knowmore"></div>
-      // <Scroller />
+      <Scroller />
       <Callendy />
       <div className="p-10 w-full">
         <div className="flex items-center justify-center gap-4 my-4">
