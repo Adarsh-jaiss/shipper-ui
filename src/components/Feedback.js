@@ -55,7 +55,7 @@ const FeedbackPopup = ({ isOpen, onClose }) => {
           <button onClick={onClose} className="text-gray-500">&times;</button>
         </div>
         <p className="mb-4 text-sm text-gray-600">
-        Is there anything else you'd like to share about your experience? Your feedback is valuable to us.
+        "Is there anything else you'd like to share about your experience? Your feedback is valuable to us."
         </p>
         <form className='space-y-4' onSubmit={handleSubmit}>
           <div className="space-y-2 flex flex-col">
