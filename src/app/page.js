@@ -3,6 +3,8 @@ import Scroller from "@/components/Scroller";
 import "./globals.css";
 import Callendy from "@/components/Callendy";
 import Navbar from "@/components/Navbar";
+import FeedbackPopup from "@/components/Feedback"; 
+import { useState } from "react";
 
 export default function Home() {
   return (
@@ -10,12 +12,19 @@ export default function Home() {
       <div className="box-border mx-auto w-[1100px] max-2xl:w-[1200px] max-xl:w-[920px] max-lg:w-[680px] max-md:w-[440px] max-sm:w-[340px]">
         <Navbar />
         <HomePage />
+        {/* <Footer /> */}
       </div>
     </div>
   );
 }
 
 const HomePage = () => {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const togglePopup = (e) => {
+    e.preventDefault();
+    setIsPopupOpen(!isPopupOpen);
+  };
   return (
     <div className="w-full dotted-background relative flex flex-col items-center justify-center">
       <div className="flex items-center justify-center max-md:hidden">
@@ -64,9 +73,9 @@ const HomePage = () => {
                   Getting Started
                 </button>
               </a>
-              <a href="#Knowmore">
+              <a href="#" onClick={togglePopup}>
                 <button className="whitespace-nowrap flex flex-row items-center justify-center gap-2 rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
-                  Learn More
+                Help us improve
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="lucide lucide-arrow-right ml-1 h-4 w-4 transition-transform duration-300 ease-in-out transform hover:translate-x-1"
@@ -82,33 +91,43 @@ const HomePage = () => {
                   </svg>
                 </button>
               </a>
+              <FeedbackPopup isOpen={isPopupOpen} onClose={() => setIsPopupOpen(false)} />
             </div>
           </section>
         </section>
       </div>
-      <div id="Knowmore"></div>
-      <Scroller />
-      <Callendy />
-      <div className="p-10 w-full">
-        <div className="flex items-center justify-center gap-4 my-4">
-          <a
-            href="https://github.com/Adarsh-jaiss"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Github
-          </a>
-          <a
-            href="https://x.com/twtadarsh"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Twitter
-          </a>
+    </div>
+  );
+};
+
+const Footer = () => {
+  return (
+    <div>
+      <div>
+        <div id="Knowmore"></div>
+        <Scroller />
+        <Callendy />
+        <div className="p-10 w-full">
+          <div className="flex items-center justify-center gap-4 my-4">
+            <a
+              href="https://github.com/Adarsh-jaiss"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Github
+            </a>
+            <a
+              href="https://x.com/twtadarsh"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Twitter
+            </a>
+          </div>
+          <p className="text-center text-sm text-gray-500">
+            &copy; {new Date().getFullYear()} shipper. All rights reserved.
+          </p>
         </div>
-        <p className="text-center text-sm text-gray-500">
-          &copy; {new Date().getFullYear()} shipper. All rights reserved.
-        </p>
       </div>
     </div>
   );

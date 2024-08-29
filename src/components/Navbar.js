@@ -39,7 +39,7 @@ function Navbar() {
             </button>
           </a>
 
-          <a target="_blank" href="/idea">
+          <a target="" href="/idea">
             <button className="whitespace-nowrap flex flex-row items-center justify-center gap-2 rounded-md text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-gradient-to-b from-neutral-600 to-neutral-900 text-white shadow-md hover:brightness-105 hover:shadow-lg transition-all duration-200 ease-in-out h-10 px-4 py-2">
               Idea behind Shipper
               <svg

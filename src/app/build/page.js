@@ -27,11 +27,11 @@ const steps = [
   },
   {
     title: "Build Configuration",
-    fields: ["buildName", "sourceType", "buildRunDeletion", "githubUrl"],
+    fields: ["buildName", "githubUrl","buildDir","buildStrategy"],
   },
   {
     title: "Image Details",
-    fields: ["buildStrategy", "imageName", "timeOut"],
+    fields: [ "imageName","imgTag" ,"timeOut"],
   },
 ];
 
@@ -43,11 +43,11 @@ export default function BuildImg() {
     registryEmail: "",
     registryPassword: "",
     buildName: "",
-    sourceType: "",
-    buildRunDeletion: "",
     githubUrl: "",
+    buildDir: "",
     buildStrategy: "",
     imageName: "",
+    imgTag: "",
     timeOut: "",
   });
   const [error, setError] = useState("");
@@ -61,7 +61,7 @@ export default function BuildImg() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:8080/build", {
+      const res = await fetch("http://api.shipper0.tech/build", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
