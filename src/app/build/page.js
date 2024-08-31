@@ -61,7 +61,7 @@ export default function BuildImg() {
     setError("");
 
     try {
-      const res = await fetch("http://api.shipper0.tech/build", {
+      const res = await fetch("https://shipper-backend-wyng.onrender.com/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
