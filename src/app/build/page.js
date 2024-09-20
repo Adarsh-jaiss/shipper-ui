@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { AlertCircle, ArrowRight, ArrowLeft, Ship, Check } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -54,7 +53,7 @@ const placeholders = {
 export default function BuildImg() {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
-    registryServer: "",
+    registryServer: "https://index.docker.io/v1/",
     registryUser: "",
     registryEmail: "",
     registryPassword: "",
@@ -83,6 +82,7 @@ export default function BuildImg() {
     setStatusMessage("");
 
     try {
+      console.log(JSON.stringify(formData))
       const res = await fetch("https://shipper-backend-75xo.onrender.com", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -91,7 +91,7 @@ export default function BuildImg() {
 
       if (res.ok) {
         setBuildStatus("success");
-        setStatusMessage("Container image build process initiated successfully");
+        setStatusMessage("Container image built and published successfully. Please check your docker hub!");
       } else {
         const data = await res.json();
         throw new Error(data.message);
