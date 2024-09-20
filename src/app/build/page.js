@@ -13,14 +13,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import BuildStatus from "@/components/buildstatus";
 
 const steps = [
   {
     title: "Registry Details",
     fields: [
-      "registryServer",
       "registryUser",
       "registryEmail",
       "registryPassword",
@@ -37,7 +35,6 @@ const steps = [
 ];
 
 const placeholders = {
-  registryServer: "https://index.docker.io/v1/",
   registryUser: "stevejobs",
   registryEmail: "steve@gmail.com",
   registryPassword: "Password",
@@ -53,15 +50,14 @@ const placeholders = {
 export default function BuildImg() {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
-    registryServer: "https://index.docker.io/v1/",
-    registryUser: "",
-    registryEmail: "",
-    registryPassword: "",
-    buildName: "",
-    githubUrl: "",
-    buildDir: "",
-    buildStrategy: "",
-    imageName: "",
+    registryUser: "adarshjaiss",
+    registryEmail: "techboyadarsh21@gmail.com",
+    registryPassword: "hp15sleliya",
+    buildName: "sample-build",
+    githubUrl: "https://github.com/adarsh-jaiss/shipper-sample-code",
+    buildDir: ".",
+    buildStrategy: "ko",
+    imageName: "shipper-sample-code",
     imgTag: "",
     timeOut: "",
   });
@@ -69,39 +65,50 @@ export default function BuildImg() {
   const [statusMessage, setStatusMessage] = useState("");
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSelectChange = (value) => {
-    setFormData({ ...formData, registryServer: value });
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setBuildStatus("loading");
-    setStatusMessage("");
+    setStatusMessage("Initiating build process...");
 
     try {
-      console.log(JSON.stringify(formData))
-      const res = await fetch("https://shipper-backend-75xo.onrender.com", {
+      console.log("Form data:", formData);
+      const response = await fetch("https://shipper-backend-75xo.onrender.com", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
-      if (res.ok) {
-        setBuildStatus("success");
-        setStatusMessage("Container image built and published successfully. Please check your docker hub!");
-      } else {
-        const data = await res.json();
-        throw new Error(data.message);
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error response:", errorData);
+        throw new Error(errorData.message || "Failed to initiate build process");
       }
+
+      const data = await response.json();
+      console.log("Build response:", data);
+
+      setBuildStatus("success");
+      setStatusMessage(
+        "Container image built and published successfully. Please check your docker hub!"
+      );
     } catch (error) {
-      console.error(error);
+      console.error("Submission error:", error);
       setBuildStatus("error");
-      setStatusMessage(error.message || "An error occurred while processing your request");
-    }
+      setStatusMessage("Error: " + error.message);
+    } 
+    // finally {
+    //   setTimeout(() => setBuildStatus(null), 5000); // Reset after 5 seconds
+    // }
   };
+
 
   const nextStep = () => {
     if (currentStep < steps.length - 1) {
@@ -164,31 +171,20 @@ export default function BuildImg() {
                               .replace(/([A-Z])/g, " $1")
                               .trim()}
                         </Label>
-                        {key === "registryServer" ? (
-                          <Select onValueChange={handleSelectChange} defaultValue={placeholders[key]}>
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select registry server" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="https://index.docker.io/v1/">https://index.docker.io/v1/</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        ) : (
-                          <Input
-                            type={
-                              key.toLowerCase().includes("password")
-                                ? "password"
-                                : "text"
-                            }
-                            id={key}
-                            name={key}
-                            value={formData[key]}
-                            onChange={handleChange}
-                            className="w-full"
-                            placeholder={placeholders[key]}
-                            required
-                          />
-                        )}
+                        <Input
+                          type={
+                            key.toLowerCase().includes("password")
+                              ? "password"
+                              : "text"
+                          }
+                          id={key}
+                          name={key}
+                          value={formData[key]}
+                          onChange={handleChange}
+                          className="w-full"
+                          placeholder={placeholders[key]}
+                          required
+                        />
                       </div>
                     ))}
                   </div>
