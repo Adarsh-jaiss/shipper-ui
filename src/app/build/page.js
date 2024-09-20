@@ -14,6 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import BuildStatus from "@/components/buildstatus";
 
 const steps = [
   {
@@ -27,13 +29,27 @@ const steps = [
   },
   {
     title: "Build Configuration",
-    fields: ["buildName", "githubUrl","buildDir","buildStrategy"],
+    fields: ["buildName", "githubUrl", "buildDir", "buildStrategy"],
   },
   {
     title: "Image Details",
-    fields: [ "imageName","imgTag" ,"timeOut"],
+    fields: ["imageName", "imgTag", "timeOut"],
   },
 ];
+
+const placeholders = {
+  registryServer: "https://index.docker.io/v1/",
+  registryUser: "stevejobs",
+  registryEmail: "steve@gmail.com",
+  registryPassword: "Password",
+  buildName: "sample-build",
+  githubUrl: "https://github.com/adarsh-jaiss/shipper-sample-code/",
+  buildDir: "/app",
+  buildStrategy: "ko",
+  imgTag: "1.0.0",
+  imageName: "shipper-sample-code",
+  timeOut: "300000s"
+};
 
 export default function BuildImg() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -50,34 +66,40 @@ export default function BuildImg() {
     imgTag: "",
     timeOut: "",
   });
-  const [error, setError] = useState("");
+  const [buildStatus, setBuildStatus] = useState(null);
+  const [statusMessage, setStatusMessage] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleSelectChange = (value) => {
+    setFormData({ ...formData, registryServer: value });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setBuildStatus("loading");
+    setStatusMessage("");
 
     try {
-      const res = await fetch("https://shipper-backend-wyng.onrender.com/", {
+      const res = await fetch("https://shipper-backend-75xo.onrender.com", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       if (res.ok) {
-        alert("Container image build process initiated successfully");
+        setBuildStatus("success");
+        setStatusMessage("Container image build process initiated successfully");
       } else {
         const data = await res.json();
         throw new Error(data.message);
       }
     } catch (error) {
       console.error(error);
-      setError(
-        error.message || "An error occurred while processing your request"
-      );
+      setBuildStatus("error");
+      setStatusMessage(error.message || "An error occurred while processing your request");
     }
   };
 
@@ -94,7 +116,7 @@ export default function BuildImg() {
   };
 
   return (
-    <div className="min-h-screen  flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <Card className="w-full max-w-4xl shadow-2xl">
         <CardHeader className="space-y-1 bg-neutral-900 text-white rounded-t-xl p-6">
           <div className="flex items-center justify-center space-x-2">
@@ -115,7 +137,7 @@ export default function BuildImg() {
                   disabled={index > currentStep}
                   className={
                     index <= currentStep
-                      ? "text-blue-500 lowercase "
+                      ? "text-blue-500 lowercase"
                       : "text-gray-400 lowercase"
                   }
                 >
@@ -142,26 +164,31 @@ export default function BuildImg() {
                               .replace(/([A-Z])/g, " $1")
                               .trim()}
                         </Label>
-                        <Input
-                          type={
-                            key.toLowerCase().includes("password")
-                              ? "password"
-                              : "text"
-                          }
-                          id={key}
-                          name={key}
-                          value={formData[key]}
-                          onChange={handleChange}
-                          className="w-full"
-                          placeholder={`Enter ${
-                            key.charAt(0).toUpperCase() +
-                            key
-                              .slice(1)
-                              .replace(/([A-Z])/g, " $1")
-                              .trim()
-                          }`}
-                          required
-                        />
+                        {key === "registryServer" ? (
+                          <Select onValueChange={handleSelectChange} defaultValue={placeholders[key]}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select registry server" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="https://index.docker.io/v1/">https://index.docker.io/v1/</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <Input
+                            type={
+                              key.toLowerCase().includes("password")
+                                ? "password"
+                                : "text"
+                            }
+                            id={key}
+                            name={key}
+                            value={formData[key]}
+                            onChange={handleChange}
+                            className="w-full"
+                            placeholder={placeholders[key]}
+                            required
+                          />
+                        )}
                       </div>
                     ))}
                   </div>
@@ -169,19 +196,14 @@ export default function BuildImg() {
               </TabsContent>
             ))}
           </Tabs>
-          {error && (
-            <Alert variant="destructive" className="mt-4">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+          <BuildStatus status={buildStatus} message={statusMessage} />
         </CardContent>
 
         <hr />
-        <CardFooter className=" rounded-b-xl p-6 flex justify-between">
+        <CardFooter className="rounded-b-xl p-6 flex justify-between">
           <Button
             onClick={prevStep}
-            disabled={currentStep === 0}
+            disabled={currentStep === 0 || buildStatus === "loading"}
             variant="outline"
             className="w-1/3 whitespace-nowrap flex flex-row items-center justify-center gap-2 rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
           >
@@ -190,6 +212,7 @@ export default function BuildImg() {
           {currentStep < steps.length - 1 ? (
             <Button
               onClick={nextStep}
+              disabled={buildStatus === "loading"}
               className="w-1/3 whitespace-nowrap flex flex-row items-center justify-center gap-2 rounded-md text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-gradient-to-b from-neutral-600 to-neutral-900 text-white shadow-md hover:brightness-105 hover:shadow-lg transition-all duration-200 ease-in-out h-10 px-4 py-2"
             >
               next <ArrowRight className="ml-2 h-4 w-4" />
@@ -197,7 +220,8 @@ export default function BuildImg() {
           ) : (
             <Button
               onClick={handleSubmit}
-              className="w-1/3 bg-green-600 hover:bg-green-700 whitespace-nowrap flex flex-row items-center justify-center gap-2 rounded-md text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50  text-white shadow-md hover:brightness-105 hover:shadow-lg transition-all duration-200 ease-in-out h-10 px-4 py-2"
+              disabled={buildStatus === "loading"}
+              className="w-1/3 bg-green-600 hover:bg-green-700 whitespace-nowrap flex flex-row items-center justify-center gap-2 rounded-md text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-white shadow-md hover:brightness-105 hover:shadow-lg transition-all duration-200 ease-in-out h-10 px-4 py-2"
             >
               ship it! <Check className="ml-2 h-4 w-4" />
             </Button>
