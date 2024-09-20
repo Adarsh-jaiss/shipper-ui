@@ -50,14 +50,14 @@ const placeholders = {
 export default function BuildImg() {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
-    registryUser: "adarshjaiss",
-    registryEmail: "techboyadarsh21@gmail.com",
-    registryPassword: "hp15sleliya",
-    buildName: "sample-build",
-    githubUrl: "https://github.com/adarsh-jaiss/shipper-sample-code",
+    registryUser: "",
+    registryEmail: "",
+    registryPassword: "",
+    buildName: "",
+    githubUrl: "",
     buildDir: ".",
-    buildStrategy: "ko",
-    imageName: "shipper-sample-code",
+    buildStrategy: "",
+    imageName: "",
     imgTag: "",
     timeOut: "",
   });
