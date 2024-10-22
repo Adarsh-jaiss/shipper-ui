@@ -47,7 +47,7 @@ const HomePage = () => {
                 <rect width="7" height="7" x="14" y={3} rx={1}></rect>
                 <path d="M10 21V8a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1H3"></path>
               </svg>
-              <span className="mx-3">coming soon</span>
+              <span className="mx-3">Temporily out of service</span>
             </a>
 
             <h1 className="text-center text-xl font-bold leading-tight tracking-tighter md:text-5xl lg:leading-[1.1]">
